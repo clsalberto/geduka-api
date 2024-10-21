@@ -1,0 +1,28 @@
+name: geduka_server
+
+networks:
+  network:
+    driver: bridge
+
+services:
+  postgres:
+    image: bitnami/postgresql:15.8.0
+    container_name: geduka_database
+    networks:
+      - network
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=geduka
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=geduka_db
+
+  redis:
+    image: bitnami/redis:6.2.14
+    container_name: geduka_redis
+    networks:
+      - network
+    ports:
+      - '6379:6379'
+    environment:
+      - REDIS_PASSWORD=secret
