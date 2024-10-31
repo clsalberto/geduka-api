@@ -1,0 +1,24 @@
+GET http://127.0.0.1:3333 HTTP/1.1
+
+###
+
+POST http://127.0.0.1:3333/account/new HTTP/1.1
+content-type: application/json
+
+{
+  "name": "Colegio Teste",
+  "email": "contato@teste.com.br",
+  "phone": "(85) 98800-6400",
+  "taxId": "21.543.678/0001-90",
+  "password": "1q2w!Q@W",
+  "role": "TENANT",
+  "address": {
+    "zip": "60540-232",
+    "place": "Rua Nova Conquista",
+    "number": "2837",
+    "complement": "Casa A",
+    "district": "Granja Lisboa",
+    "city": "Fortaleza",
+    "state": "CE"
+  }
+}
