@@ -1,0 +1,26 @@
+services:
+  database:
+    image: bitnami/postgresql:14.15.0
+    container_name: "geduka_postgresql"
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=geduka
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=geduka_database
+    volumes:
+      - polls_postgresql_data:/bitnami/postgresql
+
+  cache:
+    image: bitnami/redis:6.2.16
+    container_name: "geduka_redis"
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=secret
+    volumes:
+      - polls_redis_data:/bitnami/redis/data
+
+volumes:
+  polls_postgresql_data:
+  polls_redis_data:

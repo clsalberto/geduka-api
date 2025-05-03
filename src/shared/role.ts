@@ -1,0 +1,18 @@
+export type Role =
+  | 'LANDLORD'
+  | 'TENANT'
+  | 'ADMINISTRATOR'
+  | 'COORDINATOR'
+  | 'TEACHER'
+  | 'RESPONSIBLE'
+  | 'STUDENT'
+
+export const Role = {
+  LANDLORD: 'LANDLORD' as Role,
+  TENANT: 'TENANT' as Role,
+  ADMINISTRATOR: 'ADMINISTRATOR' as Role,
+  COORDINATOR: 'COORDINATOR' as Role,
+  TEACHER: 'TEACHER' as Role,
+  RESPONSIBLE: 'RESPONSIBLE' as Role,
+  STUDENT: 'STUDENT' as Role,
+}
