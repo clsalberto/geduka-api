@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, primaryKey } from 'drizzle-orm/pg-core'
+import { pgTable, primaryKey, uuid, varchar } from 'drizzle-orm/pg-core'
 
 import { tenants } from './tenants'
 import { users } from './users'

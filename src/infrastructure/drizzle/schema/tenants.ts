@@ -21,7 +21,5 @@ export const tenants = pgTable('tenants', {
       onUpdate: 'cascade',
     })
     .notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true })
-    .notNull()
-    .defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
 })
