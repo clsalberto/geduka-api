@@ -1,4 +1,5 @@
 import { User } from '~/domain/entities'
+import { NotificationError } from '~/domain/notification'
 import { Email, Phone } from '~/domain/types'
 
 import type { HashAdapter } from '~/application/adapters/hash'
@@ -6,7 +7,6 @@ import type { UsersGateway } from '~/application/gateways/users'
 import type { Usecase } from '~/application/usecase'
 
 import { HttpCode } from '~/shared/http'
-import { NotificationError } from '~/shared/notification'
 import type { Role } from '~/shared/role'
 
 export interface CreateUserInput {

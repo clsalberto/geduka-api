@@ -1,9 +1,10 @@
 import { Tenant } from '~/domain/entities'
+import { NotificationError } from '~/domain/notification'
 import { CNPJ, Email, Phone } from '~/domain/types'
 
+import type { TenantsGateway } from '~/application/gateways/tenants'
 import type { Usecase } from '~/application/usecase'
 
-import type { TenantsGateway } from '../gateways/tenants'
 import type {
   CreateAddressInput,
   CreateAddressInterface,
@@ -11,7 +12,6 @@ import type {
 import type { CreateUserInterface } from './create-user'
 
 import { HttpCode } from '~/shared/http'
-import { NotificationError } from '~/shared/notification'
 import { Role } from '~/shared/role'
 
 export interface CreateTenantInput {

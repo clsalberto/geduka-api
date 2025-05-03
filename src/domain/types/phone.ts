@@ -1,5 +1,6 @@
+import { NotificationError } from '~/domain/notification'
+
 import { HttpCode } from '~/shared/http'
-import { NotificationError } from '~/shared/notification'
 
 export class Phone {
   private phone: string
