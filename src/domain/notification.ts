@@ -1,22 +1,27 @@
-import { HttpCode } from '~/shared/http'
+import type { HttpCode } from '~/shared/http'
+
+export interface NotificationProps {
+  message: string
+  code: HttpCode
+}
 
 export class NotificationError extends Error {
   code: HttpCode
 
-  constructor(message: string, code?: HttpCode) {
-    super(message)
-    this.code = code ?? HttpCode.INTERNAL_SERVER_ERROR
+  constructor(props: NotificationProps) {
+    super(props.message)
+    this.code = props.code
   }
 }
 
-export class NotificationData<T = unknown> {
+export class NotificationData<T> {
   message: string
   code: HttpCode
-  data?: T | null
+  data: T
 
-  constructor(message: string, code?: HttpCode, data?: T | null) {
-    this.message = message
-    this.code = code ?? HttpCode.INTERNAL_SERVER_ERROR
+  constructor(props: NotificationProps, data: T) {
+    this.message = props.message
+    this.code = props.code
     this.data = data
   }
 }

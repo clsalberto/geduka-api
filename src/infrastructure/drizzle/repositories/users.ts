@@ -4,9 +4,9 @@ import { User } from '~/domain/entities'
 import { Email, Phone } from '~/domain/types'
 
 import type {
-  ContactProps,
   MemberProps,
   UsersGateway,
+  UserUniqueProps,
 } from '~/application/gateways/users'
 
 import type { Transaction } from '~/infrastructure/drizzle/client'
@@ -14,11 +14,11 @@ import { members } from '~/infrastructure/drizzle/schema/members'
 import { users } from '~/infrastructure/drizzle/schema/users'
 
 export class UsersRepository implements UsersGateway {
-  constructor(private readonly ctx: Transaction) {}
+  constructor(private readonly ctx: Transaction) { }
 
-  async findByContactProps(contact: ContactProps): Promise<User | null> {
+  async findByUniqueProps(props: UserUniqueProps): Promise<User | null> {
     const data = await this.ctx.query.users.findFirst({
-      where: or(eq(users.email, contact.email), eq(users.phone, contact.phone)),
+      where: or(eq(users.email, props.email), eq(users.phone, props.phone)),
     })
 
     if (!data) return null

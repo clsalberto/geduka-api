@@ -7,6 +7,7 @@ export interface TenantProps {
   email: Email
   phone: Phone
   taxId: CNPJ
+  domain: string
   addressId: string
   createdAt: Date
 }

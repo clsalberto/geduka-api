@@ -1,8 +1,11 @@
 import { Address } from '~/domain/entities'
 import { Zip } from '~/domain/types'
+import { NotificationData } from '~/domain/notification'
 
-import type { AddressesGateway } from '../gateways/addresses'
+import type { AddressesGateway } from '~/application/gateways'
 import type { Usecase } from '../usecase'
+
+import { HttpCode } from '~/shared/http'
 
 export interface CreateAddressInput {
   zip: string
@@ -14,20 +17,13 @@ export interface CreateAddressInput {
   state: string
 }
 
-export interface CreateAddressOutput {
-  address: Address
-}
-
 export interface CreateAddressInterface
-  extends Usecase<CreateAddressInput, CreateAddressOutput> {}
+  extends Usecase<CreateAddressInput, NotificationData<Address>> {}
 
 export class CreateAddressUsecase implements CreateAddressInterface {
   constructor(private readonly address: AddressesGateway) {}
 
-  async execute(
-    data: CreateAddressInput,
-    db: unknown
-  ): Promise<CreateAddressOutput> {
+  async execute(data: CreateAddressInput): Promise<NotificationData<Address>> {
     let address = await this.address.findByLocationProps({ ...data })
 
     if (!address) {
@@ -35,6 +31,9 @@ export class CreateAddressUsecase implements CreateAddressInterface {
       await this.address.insert(address)
     }
 
-    return { address }
+    return new NotificationData(
+      { message: 'Get address successfully', code: HttpCode.OK },
+      address
+    )
   }
 }

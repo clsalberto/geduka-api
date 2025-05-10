@@ -16,7 +16,10 @@ export class CNPJ {
     )
 
     if (!regex.test(cnpj)) {
-      throw new NotificationError('CNPJ: Invalid tax id', HttpCode.FORBIDDEN)
+      throw new NotificationError({
+        message: 'CNPJ: Invalid tax id',
+        code: HttpCode.FORBIDDEN,
+      })
     }
   }
 

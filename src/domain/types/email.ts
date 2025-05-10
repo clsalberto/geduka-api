@@ -14,7 +14,10 @@ export class Email {
     const regex = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)
 
     if (!regex.test(email)) {
-      throw new NotificationError('Email invalid', HttpCode.FORBIDDEN)
+      throw new NotificationError({
+        message: 'Email invalid',
+        code: HttpCode.FORBIDDEN,
+      })
     }
   }
 

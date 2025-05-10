@@ -14,7 +14,10 @@ export class CPF {
     const regex = new RegExp(/^([0-9]{3}\.?[0-9]{3}\.?[0-9]{3}\-?[0-9]{2})$/)
 
     if (!regex.test(cpf)) {
-      throw new NotificationError('CPF: Invalid tax id', HttpCode.FORBIDDEN)
+      throw new NotificationError({
+        message: 'CPF: Invalid tax id',
+        code: HttpCode.FORBIDDEN,
+      })
     }
   }
 

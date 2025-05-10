@@ -15,6 +15,13 @@
       "when": 1746290143624,
       "tag": "0001_shocking_venom",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1746465860955,
+      "tag": "0002_calm_joshua_kane",
+      "breakpoints": true
     }
   ]
 }

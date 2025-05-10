@@ -1,5 +1,5 @@
 import { Tenant } from '~/domain/entities'
-import { NotificationError } from '~/domain/notification'
+import { NotificationData, NotificationError } from '~/domain/notification'
 import { CNPJ, Email, Phone } from '~/domain/types'
 
 import type { TenantsGateway } from '~/application/gateways/tenants'
@@ -19,16 +19,13 @@ export interface CreateTenantInput {
   email: string
   phone: string
   taxId: string
+  domain: string
   password: string
   address: CreateAddressInput
 }
 
-export interface CreateTenantOutput {
-  tenant: Tenant
-}
-
 export interface CreateTenantInterface
-  extends Usecase<CreateTenantInput, CreateTenantOutput> {}
+  extends Usecase<CreateTenantInput, NotificationData<Tenant>> {}
 
 export class CreateTenantUsecase implements CreateTenantInterface {
   constructor(
@@ -40,12 +37,19 @@ export class CreateTenantUsecase implements CreateTenantInterface {
   async execute(
     data: CreateTenantInput,
     db: unknown
-  ): Promise<CreateTenantOutput> {
+  ): Promise<NotificationData<Tenant>> {
     const tenantExists = await this.tenant.findByUniqueProps({ ...data })
-    if (tenantExists)
-      throw new NotificationError('Tenant already exists', HttpCode.CONFLICT)
 
-    const { address } = await this.address.execute({ ...data.address }, db)
+    if (tenantExists)
+      throw new NotificationError({
+        message: 'Tenant already exists',
+        code: HttpCode.CONFLICT,
+      })
+
+    const { data: address } = await this.address.execute(
+      { ...data.address },
+      db
+    )
 
     const tenant = Tenant.instance({
       ...data,
@@ -54,12 +58,21 @@ export class CreateTenantUsecase implements CreateTenantInterface {
       taxId: CNPJ.create(data.taxId),
       addressId: address.id,
     })
+    await this.tenant.insert(tenant)
 
     await this.user.execute(
-      { ...data, tenantId: tenant.id, role: Role.TENANT },
+      {
+        ...data,
+        username: data.domain,
+        tenantId: tenant.id,
+        role: Role.TENANT,
+      },
       db
     )
 
-    return { tenant }
+    return new NotificationData(
+      { message: 'Tenant created successfully', code: HttpCode.CREATED },
+      tenant
+    )
   }
 }

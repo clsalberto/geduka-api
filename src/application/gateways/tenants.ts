@@ -4,6 +4,7 @@ export interface TenantUniqueProps {
   email: string
   phone: string
   taxId: string
+  domain: string
 }
 
 export interface TenantsGateway {

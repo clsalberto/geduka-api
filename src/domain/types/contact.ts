@@ -7,21 +7,25 @@ export interface ContactProps {
 }
 
 export class Contacts {
-  private contact: ContactProps
+  private contacts: ContactProps
 
-  private constructor(contact: ContactProps) {
-    this.contact = contact
+  private constructor(contacts: ContactProps) {
+    this.contacts = contacts
   }
 
-  static create(contact: ContactProps) {
-    return new Contacts(contact)
+  static create(contacts: ContactProps) {
+    return new Contacts(contacts)
   }
 
   get phone() {
-    return this.contact.phone
+    return this.contacts.phone
   }
 
   get email() {
-    return this.contact.email
+    return this.contacts.email
+  }
+
+  value() {
+    return this.contacts
   }
 }

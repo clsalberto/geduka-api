@@ -14,7 +14,10 @@ export class Zip {
     const regex = new RegExp(/^([0-9]{5}\-?[0-9]{3})$/)
 
     if (!regex.test(zip)) {
-      throw new NotificationError('Zip code invalid', HttpCode.FORBIDDEN)
+      throw new NotificationError({
+        message: 'Zip code invalid',
+        code: HttpCode.FORBIDDEN,
+      })
     }
   }
 

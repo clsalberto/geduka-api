@@ -16,7 +16,10 @@ export class Phone {
     )
 
     if (!regex.test(phone)) {
-      throw new NotificationError('Phone invalid', HttpCode.FORBIDDEN)
+      throw new NotificationError({
+        message: 'Phone invalid',
+        code: HttpCode.FORBIDDEN,
+      })
     }
   }
 

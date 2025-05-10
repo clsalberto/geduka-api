@@ -4,15 +4,15 @@ import { Tenant } from '~/domain/entities'
 import { CNPJ, Email, Phone } from '~/domain/types'
 
 import type {
-  TenantUniqueProps,
   TenantsGateway,
+  TenantUniqueProps,
 } from '~/application/gateways/tenants'
 
 import type { Transaction } from '~/infrastructure/drizzle/client'
 import { tenants } from '~/infrastructure/drizzle/schema/tenants'
 
 export class TenantsRepository implements TenantsGateway {
-  constructor(private readonly ctx: Transaction) {}
+  constructor(private readonly ctx: Transaction) { }
 
   async findByUniqueProps(props: TenantUniqueProps): Promise<Tenant | null> {
     const data = await this.ctx.query.tenants.findFirst({

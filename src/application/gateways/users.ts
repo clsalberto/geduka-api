@@ -7,13 +7,14 @@ export interface MemberProps {
   role: Role
 }
 
-export interface ContactProps {
+export interface UserUniqueProps {
   email: string
+  username: string
   phone: string
 }
 
 export interface UsersGateway {
-  findByContactProps(contact: ContactProps): Promise<User | null>
+  findByUniqueProps(props: UserUniqueProps): Promise<User | null>
   findByEmail(email: string): Promise<User | null>
   findByPhone(phone: string): Promise<User | null>
   insert(user: User, member: MemberProps): Promise<void>

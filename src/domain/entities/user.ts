@@ -6,6 +6,7 @@ import type { Email, Phone } from '../types'
 export interface UserProps {
   name: string
   email: Email
+  username: string
   phone: Phone
   password: string
   createdAt: Date

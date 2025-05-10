@@ -15,6 +15,7 @@ export const tenants = pgTable('tenants', {
   email: varchar('email', { length: 255 }).notNull().unique(),
   phone: char('phone', { length: 11 }).notNull().unique(),
   taxId: varchar('tax_id', { length: 14 }).notNull().unique(),
+  domain: varchar('domain', { length: 80 }).notNull().unique(),
   addressId: uuid('address_id')
     .references(() => addresses.id, {
       onDelete: 'cascade',

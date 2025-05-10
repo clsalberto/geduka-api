@@ -1,21 +1,29 @@
+networks:
+  geduka_net:
+    driver: bridge
+
 services:
   database:
-    image: bitnami/postgresql:14.15.0
+    image: bitnami/postgresql:14.17.0
     container_name: "geduka_postgresql"
+    networks:
+      - geduka_net
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=geduka
-      - POSTGRES_PASSWORD=secret
-      - POSTGRES_DB=geduka_database
+      - POSTGRESQL_USERNAME=geduka
+      - POSTGRESQL_PASSWORD=secret
+      - POSTGRESQL_DATABASE=geduka_database
     volumes:
       - polls_postgresql_data:/bitnami/postgresql
 
   cache:
-    image: bitnami/redis:6.2.16
+    image: bitnami/redis:7.4.3
     container_name: "geduka_redis"
+    networks:
+      - geduka_net
     ports:
-      - "6379:6379"
+      - "6380:6380"
     environment:
       - REDIS_PASSWORD=secret
     volumes:

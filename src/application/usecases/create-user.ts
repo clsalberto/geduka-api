@@ -1,5 +1,5 @@
 import { User } from '~/domain/entities'
-import { NotificationError } from '~/domain/notification'
+import { NotificationData, NotificationError } from '~/domain/notification'
 import { Email, Phone } from '~/domain/types'
 
 import type { HashAdapter } from '~/application/adapters/hash'
@@ -12,18 +12,15 @@ import type { Role } from '~/shared/role'
 export interface CreateUserInput {
   name: string
   email: string
+  username: string
   phone: string
   password: string
   tenantId: string
   role: Role
 }
 
-export interface CreateAccountOutput {
-  user: User
-}
-
 export interface CreateUserInterface
-  extends Usecase<CreateUserInput, CreateAccountOutput> {}
+  extends Usecase<CreateUserInput, NotificationData<User>> {}
 
 export class CreateAccountUsecase implements CreateUserInterface {
   constructor(
@@ -31,13 +28,14 @@ export class CreateAccountUsecase implements CreateUserInterface {
     private readonly crypto: HashAdapter
   ) {}
 
-  async execute(
-    data: CreateUserInput,
-    db: unknown
-  ): Promise<CreateAccountOutput> {
-    const userExists = await this.user.findByContactProps({ ...data })
+  async execute(data: CreateUserInput): Promise<NotificationData<User>> {
+    const userExists = await this.user.findByUniqueProps({ ...data })
+
     if (userExists)
-      throw new NotificationError('User already exists', HttpCode.CONFLICT)
+      throw new NotificationError({
+        message: 'User already exists',
+        code: HttpCode.CONFLICT,
+      })
 
     const passwordHash = await this.crypto.hash(data.password)
 
@@ -48,8 +46,11 @@ export class CreateAccountUsecase implements CreateUserInterface {
       password: passwordHash,
     })
 
-    await this.user.insert(user, { ...data })
+    await this.user.insert(user, { tenantId: data.tenantId, role: data.role })
 
-    return { user }
+    return new NotificationData(
+      { message: 'User created successfully', code: HttpCode.CREATED },
+      user
+    )
   }
 }
