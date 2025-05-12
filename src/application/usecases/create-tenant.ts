@@ -1,5 +1,4 @@
 import { Tenant } from '~/domain/entities'
-import { NotificationData, NotificationError } from '~/domain/notification'
 import { CNPJ, Email, Phone } from '~/domain/types'
 
 import type { TenantsGateway } from '~/application/gateways/tenants'
@@ -12,6 +11,7 @@ import type {
 import type { CreateUserInterface } from './create-user'
 
 import { HttpCode } from '~/shared/http'
+import { NotificationData, NotificationError } from '~/shared/notification'
 import { Role } from '~/shared/role'
 
 export interface CreateTenantInput {
@@ -29,14 +29,14 @@ export interface CreateTenantOutput {
 }
 
 export interface CreateTenantInterface
-  extends Usecase<CreateTenantInput, CreateTenantOutput> { }
+  extends Usecase<CreateTenantInput, CreateTenantOutput> {}
 
 export class CreateTenantUsecase implements CreateTenantInterface {
   constructor(
     private readonly tenant: TenantsGateway,
     private readonly address: CreateAddressInterface,
     private readonly user: CreateUserInterface
-  ) { }
+  ) {}
 
   async execute(
     data: CreateTenantInput,

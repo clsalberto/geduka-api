@@ -1,11 +1,11 @@
 import { Address } from '~/domain/entities'
 import { Zip } from '~/domain/types'
-import { NotificationData } from '~/domain/notification'
 
 import type { AddressesGateway } from '~/application/gateways'
-import type { Usecase } from '../usecase'
+import type { Usecase } from '~/application/usecase'
 
 import { HttpCode } from '~/shared/http'
+import { NotificationData } from '~/shared/notification'
 
 export interface CreateAddressInput {
   zip: string
@@ -22,10 +22,10 @@ export interface CreateAddressOutput {
 }
 
 export interface CreateAddressInterface
-  extends Usecase<CreateAddressInput, CreateAddressOutput> { }
+  extends Usecase<CreateAddressInput, CreateAddressOutput> {}
 
 export class CreateAddressUsecase implements CreateAddressInterface {
-  constructor(private readonly address: AddressesGateway) { }
+  constructor(private readonly address: AddressesGateway) {}
 
   async execute(
     data: CreateAddressInput

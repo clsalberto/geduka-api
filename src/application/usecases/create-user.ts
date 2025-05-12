@@ -1,5 +1,4 @@
 import { User } from '~/domain/entities'
-import { NotificationData, NotificationError } from '~/domain/notification'
 import { Email, Phone } from '~/domain/types'
 
 import type { HashAdapter } from '~/application/adapters/hash'
@@ -7,6 +6,7 @@ import type { UsersGateway } from '~/application/gateways/users'
 import type { Usecase } from '~/application/usecase'
 
 import { HttpCode } from '~/shared/http'
+import { NotificationData, NotificationError } from '~/shared/notification'
 import type { Role } from '~/shared/role'
 
 export interface CreateUserInput {
@@ -24,13 +24,13 @@ export interface CreateUserOutput {
 }
 
 export interface CreateUserInterface
-  extends Usecase<CreateUserInput, CreateUserOutput> { }
+  extends Usecase<CreateUserInput, CreateUserOutput> {}
 
 export class CreateUserUsecase implements CreateUserInterface {
   constructor(
     private readonly user: UsersGateway,
     private readonly crypto: HashAdapter
-  ) { }
+  ) {}
 
   async execute(
     data: CreateUserInput

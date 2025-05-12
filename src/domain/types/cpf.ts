@@ -1,4 +1,4 @@
-import { NotificationError } from '~/domain/notification'
+import { NotificationError } from '~/shared/notification'
 
 import { HttpCode } from '~/shared/http'
 
