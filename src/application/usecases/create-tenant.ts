@@ -24,21 +24,30 @@ export interface CreateTenantInput {
   address: CreateAddressInput
 }
 
+export interface CreateTenantOutput {
+  tenant: Tenant
+}
+
 export interface CreateTenantInterface
-  extends Usecase<CreateTenantInput, NotificationData<Tenant>> {}
+  extends Usecase<CreateTenantInput, CreateTenantOutput> { }
 
 export class CreateTenantUsecase implements CreateTenantInterface {
   constructor(
     private readonly tenant: TenantsGateway,
     private readonly address: CreateAddressInterface,
     private readonly user: CreateUserInterface
-  ) {}
+  ) { }
 
   async execute(
     data: CreateTenantInput,
     db: unknown
-  ): Promise<NotificationData<Tenant>> {
-    const tenantExists = await this.tenant.findByUniqueProps({ ...data })
+  ): Promise<NotificationData<CreateTenantOutput>> {
+    const tenantExists = await this.tenant.findByUniqueProps({
+      email: data.email,
+      phone: data.phone,
+      taxId: data.taxId,
+      domain: data.domain,
+    })
 
     if (tenantExists)
       throw new NotificationError({
@@ -46,10 +55,9 @@ export class CreateTenantUsecase implements CreateTenantInterface {
         code: HttpCode.CONFLICT,
       })
 
-    const { data: address } = await this.address.execute(
-      { ...data.address },
-      db
-    )
+    const {
+      data: { address },
+    } = await this.address.execute({ ...data.address }, db)
 
     const tenant = Tenant.instance({
       ...data,
@@ -72,7 +80,7 @@ export class CreateTenantUsecase implements CreateTenantInterface {
 
     return new NotificationData(
       { message: 'Tenant created successfully', code: HttpCode.CREATED },
-      tenant
+      { tenant }
     )
   }
 }

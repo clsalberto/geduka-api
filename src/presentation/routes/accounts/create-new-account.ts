@@ -1,6 +1,22 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
+import {
+  CreateAddressUsecase,
+  CreateTenantUsecase,
+  CreateUserUsecase,
+} from '~/application/usecases'
+
+import { db } from '~/infrastructure/drizzle/client'
+import {
+  TenantsRepository,
+  UsersRepository,
+  AddressesRepository,
+} from '~/infrastructure/drizzle/repositories'
+import { BcryptHashProvider } from '~/infrastructure/providers'
+
+import { HttpCode } from '~/shared/http'
+
 export const createNewAccountRoute: FastifyPluginAsyncZod = async app => {
   app.post(
     '/accounts',
@@ -25,13 +41,41 @@ export const createNewAccountRoute: FastifyPluginAsyncZod = async app => {
         }),
       },
     },
-    (request, reply) => {
+    async (request, reply) => {
       const { name, email, phone, taxId, password, domain, address } =
         request.body
 
+      await db.transaction(async tx => {
+        const tenantsRepository = new TenantsRepository(tx)
+        const addressesRepository = new AddressesRepository(tx)
+        const usersRepository = new UsersRepository(tx)
+
+        const bcryptHashProvider = new BcryptHashProvider()
+
+        const createAddressUsecase = new CreateAddressUsecase(
+          addressesRepository
+        )
+        const createUserUsecase = new CreateUserUsecase(
+          usersRepository,
+          bcryptHashProvider
+        )
+        const createTenantUsecase = new CreateTenantUsecase(
+          tenantsRepository,
+          createAddressUsecase,
+          createUserUsecase
+        )
+
+        const { message, statusCode, data } = await createTenantUsecase.execute(
+          { name, email, phone, taxId, password, domain, address },
+          tx
+        )
+
+        return reply.status(statusCode).send({ message, data })
+      })
+
       return reply
-        .status(201)
-        .send({ name, email, phone, taxId, password, domain, address })
+        .status(HttpCode.INTERNAL_SERVER_ERROR)
+        .send({ message: 'Tenant created failed' })
     }
   )
 }

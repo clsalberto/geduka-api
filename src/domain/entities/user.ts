@@ -2,6 +2,13 @@ import type { Replace } from '~/domain/replace'
 
 import { Entity } from '../entity'
 import type { Email, Phone } from '../types'
+import type { Role } from '~/shared/role'
+
+export interface Member {
+  id: string
+  name: string
+  role: Role
+}
 
 export interface UserProps {
   name: string
@@ -9,6 +16,7 @@ export interface UserProps {
   username: string
   phone: Phone
   password: string
+  tenants?: Member[]
   createdAt: Date
   activated: boolean
 }

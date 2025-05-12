@@ -17,14 +17,26 @@ export interface CreateAddressInput {
   state: string
 }
 
+export interface CreateAddressOutput {
+  address: Address
+}
+
 export interface CreateAddressInterface
-  extends Usecase<CreateAddressInput, NotificationData<Address>> {}
+  extends Usecase<CreateAddressInput, CreateAddressOutput> { }
 
 export class CreateAddressUsecase implements CreateAddressInterface {
-  constructor(private readonly address: AddressesGateway) {}
+  constructor(private readonly address: AddressesGateway) { }
 
-  async execute(data: CreateAddressInput): Promise<NotificationData<Address>> {
-    let address = await this.address.findByLocationProps({ ...data })
+  async execute(
+    data: CreateAddressInput
+  ): Promise<NotificationData<CreateAddressOutput>> {
+    let address = await this.address.findByLocationProps({
+      zip: data.zip,
+      place: data.place,
+      number: data.number,
+      complement: data.complement,
+      district: data.district,
+    })
 
     if (!address) {
       address = Address.instance({ ...data, zip: Zip.create(data.zip) })
@@ -33,7 +45,7 @@ export class CreateAddressUsecase implements CreateAddressInterface {
 
     return new NotificationData(
       { message: 'Get address successfully', code: HttpCode.OK },
-      address
+      { address }
     )
   }
 }

@@ -21,8 +21,10 @@ const schema = {
 
 export const db = drizzle(pg, { schema, logger: true })
 
-export type Transaction = PgTransaction<
-  PostgresJsQueryResultHKT,
-  typeof schema,
-  ExtractTablesWithRelations<typeof schema>
->
+export type Transaction =
+  | typeof db
+  | PgTransaction<
+    PostgresJsQueryResultHKT,
+    typeof schema,
+    ExtractTablesWithRelations<typeof schema>
+  >

@@ -1,27 +1,25 @@
-import type { HttpCode } from '~/shared/http'
-
 export interface NotificationProps {
   message: string
-  code: HttpCode
+  statusCode: number
 }
 
 export class NotificationError extends Error {
-  code: HttpCode
+  statusCode: number
 
   constructor(props: NotificationProps) {
     super(props.message)
-    this.code = props.code
+    this.statusCode = props.statusCode
   }
 }
 
 export class NotificationData<T> {
   message: string
-  code: HttpCode
+  statusCode: number
   data: T
 
   constructor(props: NotificationProps, data: T) {
     this.message = props.message
-    this.code = props.code
+    this.statusCode = props.statusCode
     this.data = data
   }
 }

@@ -19,17 +19,27 @@ export interface CreateUserInput {
   role: Role
 }
 
-export interface CreateUserInterface
-  extends Usecase<CreateUserInput, NotificationData<User>> {}
+export interface CreateUserOutput {
+  user: User
+}
 
-export class CreateAccountUsecase implements CreateUserInterface {
+export interface CreateUserInterface
+  extends Usecase<CreateUserInput, CreateUserOutput> { }
+
+export class CreateUserUsecase implements CreateUserInterface {
   constructor(
     private readonly user: UsersGateway,
     private readonly crypto: HashAdapter
-  ) {}
+  ) { }
 
-  async execute(data: CreateUserInput): Promise<NotificationData<User>> {
-    const userExists = await this.user.findByUniqueProps({ ...data })
+  async execute(
+    data: CreateUserInput
+  ): Promise<NotificationData<CreateUserOutput>> {
+    const userExists = await this.user.findByUniqueProps({
+      email: data.email,
+      phone: data.phone,
+      username: data.username,
+    })
 
     if (userExists)
       throw new NotificationError({
@@ -50,7 +60,7 @@ export class CreateAccountUsecase implements CreateUserInterface {
 
     return new NotificationData(
       { message: 'User created successfully', code: HttpCode.CREATED },
-      user
+      { user }
     )
   }
 }
