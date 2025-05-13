@@ -1,5 +1,6 @@
 import { fastifyCors } from '@fastify/cors'
 import { fastify } from 'fastify'
+import pino from 'pino'
 import {
   type ZodTypeProvider,
   serializerCompiler,
@@ -8,17 +9,37 @@ import {
 
 import { env } from '~/infrastructure/env'
 
-import { createNewAccountRoute } from './routes/accounts'
+import { routes as accounts } from './routes/accounts'
 
-const app = fastify().withTypeProvider<ZodTypeProvider>()
+const loggerConfig = {
+  redact: [
+    'ACCESS_TOKEN_SECRET_KEY',
+    'REFRESH_TOKEN_SECRET_KEY',
+    'POSTGRES_URL',
+    'REDIS_URL',
+  ],
+  level: 'debug',
+  transport: {
+    target: 'pino-pretty',
+  },
+}
 
-app.setValidatorCompiler(validatorCompiler)
-app.setSerializerCompiler(serializerCompiler)
+export const logger = pino(loggerConfig)
 
-app.register(fastifyCors, {
-  origin: env.FRONTEND_URL,
-})
+export async function buildServer() {
+  const app = fastify({
+    logger: loggerConfig,
+  }).withTypeProvider<ZodTypeProvider>()
 
-app.register(createNewAccountRoute)
+  app.setValidatorCompiler(validatorCompiler)
+  app.setSerializerCompiler(serializerCompiler)
 
-export { app }
+  app.register(fastifyCors, {
+    origin: env.FRONTEND_URL,
+  })
+
+  const v1 = '/v1/api'
+  app.register(accounts, { prefix: v1 })
+
+  return app
+}

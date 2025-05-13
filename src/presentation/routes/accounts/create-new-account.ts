@@ -65,12 +65,12 @@ export const createNewAccountRoute: FastifyPluginAsyncZod = async app => {
           createUserUsecase
         )
 
-        const { message, statusCode, data } = await createTenantUsecase.execute(
+        const { message, code, data } = await createTenantUsecase.execute(
           { name, email, phone, taxId, password, domain, address },
           tx
         )
 
-        return reply.status(statusCode).send({ message, data })
+        return reply.status(code).send({ message, data })
       })
 
       return reply
