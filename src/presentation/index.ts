@@ -10,6 +10,7 @@ import {
 import { env } from '~/infrastructure/env'
 
 import { routes as accounts } from './routes/accounts'
+import { errorHandler } from './handler'
 
 const loggerConfig = {
   redact: [
@@ -40,6 +41,8 @@ export async function buildServer() {
 
   const v1 = '/v1/api'
   app.register(accounts, { prefix: v1 })
+
+  app.setErrorHandler(errorHandler)
 
   return app
 }

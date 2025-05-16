@@ -21,6 +21,11 @@ export interface UserProps {
   activated: boolean
 }
 
+export interface UserEntity
+  extends Replace<UserProps, { email: string; phone: string }> {
+  id: string
+}
+
 export class User extends Entity<UserProps> {
   private constructor(props: UserProps, id?: string) {
     super(props, id)
@@ -38,5 +43,23 @@ export class User extends Entity<UserProps> {
       },
       id
     )
+  }
+
+  value(): UserEntity {
+    return {
+      id: this.id,
+      ...this.props,
+      email: this.props.email.value(),
+      phone: this.props.phone.value(),
+    }
+  }
+
+  formated(): UserEntity {
+    return {
+      id: this.id,
+      ...this.props,
+      email: this.props.email.value(),
+      phone: this.props.phone.formated(),
+    }
   }
 }

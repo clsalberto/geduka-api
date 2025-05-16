@@ -13,6 +13,14 @@ export interface TenantProps {
   createdAt: Date
 }
 
+export interface TenantEntity
+  extends Replace<
+    TenantProps,
+    { email: string; phone: string; taxId: string }
+  > {
+  id: string
+}
+
 export class Tenant extends Entity<TenantProps> {
   private constructor(props: TenantProps, id?: string) {
     super(props, id)
@@ -26,5 +34,25 @@ export class Tenant extends Entity<TenantProps> {
       { ...props, createdAt: props.createdAt ?? new Date() },
       id
     )
+  }
+
+  value(): TenantEntity {
+    return {
+      id: this.id,
+      ...this.props,
+      email: this.props.email.value(),
+      phone: this.props.phone.value(),
+      taxId: this.props.taxId.value(),
+    }
+  }
+
+  formated(): TenantEntity {
+    return {
+      id: this.id,
+      ...this.props,
+      email: this.props.email.value(),
+      phone: this.props.phone.formated(),
+      taxId: this.props.taxId.formated(),
+    }
   }
 }
