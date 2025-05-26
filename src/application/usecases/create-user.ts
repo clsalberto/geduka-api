@@ -1,4 +1,4 @@
-import { User } from '~/domain/entities'
+import { User, UserEntity } from '~/domain/entities'
 import { Email, Phone } from '~/domain/types'
 
 import type { HashAdapter } from '~/application/adapters/hash'
@@ -20,7 +20,7 @@ export interface CreateUserInput {
 }
 
 export interface CreateUserOutput {
-  user: User
+  user: UserEntity
 }
 
 export interface CreateUserInterface
@@ -60,7 +60,7 @@ export class CreateUserUsecase implements CreateUserInterface {
 
     return new NotificationData(
       { message: 'User created successfully', code: HttpCode.CREATED },
-      { user }
+      { user: user.formated() }
     )
   }
 }

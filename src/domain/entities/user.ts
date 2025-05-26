@@ -4,7 +4,7 @@ import { Entity } from '../entity'
 import type { Email, Phone } from '../types'
 import type { Role } from '~/shared/role'
 
-export interface Member {
+export interface TenantMember {
   id: string
   name: string
   role: Role
@@ -16,7 +16,7 @@ export interface UserProps {
   username: string
   phone: Phone
   password: string
-  tenants?: Member[]
+  tenants?: TenantMember[]
   createdAt: Date
   activated: boolean
 }
@@ -60,6 +60,7 @@ export class User extends Entity<UserProps> {
       ...this.props,
       email: this.props.email.value(),
       phone: this.props.phone.formated(),
+      password: '********',
     }
   }
 }

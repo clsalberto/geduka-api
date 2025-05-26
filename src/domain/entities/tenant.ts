@@ -1,6 +1,13 @@
+import type { Role } from '~/shared/role'
 import { Entity } from '../entity'
 import type { Replace } from '../replace'
 import type { CNPJ, Email, Phone } from '../types'
+
+export interface UserMember {
+  id: string
+  name: string
+  role: Role
+}
 
 export interface TenantProps {
   name: string
@@ -8,7 +15,7 @@ export interface TenantProps {
   phone: Phone
   taxId: CNPJ
   domain: string
-  users?: string[]
+  users?: UserMember[]
   addressId: string
   createdAt: Date
 }

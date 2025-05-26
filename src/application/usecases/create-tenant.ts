@@ -1,4 +1,4 @@
-import { Tenant } from '~/domain/entities'
+import { Tenant, type TenantEntity } from '~/domain/entities'
 import { CNPJ, Email, Phone } from '~/domain/types'
 
 import type { TenantsGateway } from '~/application/gateways/tenants'
@@ -25,7 +25,7 @@ export interface CreateTenantInput {
 }
 
 export interface CreateTenantOutput {
-  tenant: Tenant
+  tenant: TenantEntity
 }
 
 export interface CreateTenantInterface
@@ -68,7 +68,9 @@ export class CreateTenantUsecase implements CreateTenantInterface {
     })
     await this.tenant.insert(tenant)
 
-    await this.user.execute(
+    const {
+      data: { user },
+    } = await this.user.execute(
       {
         ...data,
         username: data.domain,
@@ -78,9 +80,15 @@ export class CreateTenantUsecase implements CreateTenantInterface {
       db
     )
 
+    tenant.props.users?.push({
+      id: user.id,
+      name: user.name,
+      role: Role.TENANT,
+    })
+
     return new NotificationData(
       { message: 'Tenant created successfully', code: HttpCode.CREATED },
-      { tenant }
+      { tenant: tenant.formated() }
     )
   }
 }

@@ -1,4 +1,9 @@
-import { Address } from '~/domain/entities'
+import {
+  Address,
+  type AddressEntity,
+  type AddressProps,
+} from '~/domain/entities'
+import type { Replace } from '~/domain/replace'
 import { Zip } from '~/domain/types'
 
 import type { AddressesGateway } from '~/application/gateways'
@@ -7,18 +12,11 @@ import type { Usecase } from '~/application/usecase'
 import { HttpCode } from '~/shared/http'
 import { NotificationData } from '~/shared/notification'
 
-export interface CreateAddressInput {
-  zip: string
-  place: string
-  number: string
-  complement?: string | null
-  district: string
-  city: string
-  state: string
-}
+export interface CreateAddressInput
+  extends Replace<AddressProps, { zip: string }> {}
 
 export interface CreateAddressOutput {
-  address: Address
+  address: AddressEntity
 }
 
 export interface CreateAddressInterface
@@ -45,7 +43,7 @@ export class CreateAddressUsecase implements CreateAddressInterface {
 
     return new NotificationData(
       { message: 'Get address successfully', code: HttpCode.OK },
-      { address }
+      { address: address.formated() }
     )
   }
 }

@@ -13,13 +13,15 @@ export const errorHandler: FastifyInstance['errorHandler'] = (
   _request: FastifyRequest,
   reply: FastifyReply
 ) => {
+  console.log(error)
+
   if (error instanceof NotificationError) {
-    return reply.status(error.code).send({ error })
+    return reply.status(error.code).send({ message: error.message })
   }
 
   if (error instanceof ZodError) {
-    return reply.status(422).send({ error })
+    error.name
   }
 
-  return reply.status(error.statusCode ?? 500).send({ error })
+  return reply.status(error.statusCode ?? 500).send({ message: error.message })
 }

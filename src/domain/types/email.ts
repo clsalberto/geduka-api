@@ -1,9 +1,14 @@
-import { NotificationError } from '~/shared/notification'
+import { z } from 'zod'
 
 import { HttpCode } from '~/shared/http'
+import { NotificationError } from '~/shared/notification'
+
+export const EmailSchema = z.string().email({
+  message: 'E-mail inválido',
+})
 
 export class Email {
-  private email: string
+  private readonly email: string
 
   private constructor(email: string) {
     this.validate(email)
@@ -11,11 +16,11 @@ export class Email {
   }
 
   private validate(email: string) {
-    const regex = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)
+    const { error } = EmailSchema.safeParse(email)
 
-    if (!regex.test(email)) {
+    if (error) {
       throw new NotificationError({
-        message: 'Email invalid',
+        message: error.message,
         code: HttpCode.FORBIDDEN,
       })
     }
