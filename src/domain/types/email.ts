@@ -1,14 +1,9 @@
-import { z } from 'zod'
-
 import { HttpCode } from '~/shared/http'
 import { NotificationError } from '~/shared/notification'
-
-export const EmailSchema = z.string().email({
-  message: 'E-mail inválido',
-})
+import { validateEmail } from '~/shared/utils/validation'
 
 export class Email {
-  private readonly email: string
+  private email: string
 
   private constructor(email: string) {
     this.validate(email)
@@ -16,14 +11,13 @@ export class Email {
   }
 
   private validate(email: string) {
-    const { error } = EmailSchema.safeParse(email)
+    const { error, message } = validateEmail(email)
 
-    if (error) {
+    if (error)
       throw new NotificationError({
-        message: error.message,
+        message,
         code: HttpCode.FORBIDDEN,
       })
-    }
   }
 
   static create(email: string) {

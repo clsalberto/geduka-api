@@ -22,6 +22,20 @@
       "when": 1746465860955,
       "tag": "0002_calm_joshua_kane",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1749310754582,
+      "tag": "0003_sudden_mindworm",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1749338596676,
+      "tag": "0004_free_zombie",
+      "breakpoints": true
     }
   ]
 }

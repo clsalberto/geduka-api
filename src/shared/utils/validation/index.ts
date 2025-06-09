@@ -1,0 +1,6 @@
+export * from './validate-cnpj'
+export * from './validate-cpf'
+export * from './validate-email'
+export * from './validate-password'
+export * from './validate-phone'
+export * from './validate-zip'

@@ -1,18 +1,18 @@
-import { User, UserEntity } from '~/domain/entities'
+import { User, type UserEntity } from '~/domain/entities'
 import { Email, Phone } from '~/domain/types'
 
-import type { HashAdapter } from '~/application/adapters/hash'
-import type { UsersGateway } from '~/application/gateways/users'
+import type { HashAdapter } from '~/application/adapters'
+import type { UsersGateway } from '~/application/gateways'
 import type { Usecase } from '~/application/usecase'
 
 import { HttpCode } from '~/shared/http'
 import { NotificationData, NotificationError } from '~/shared/notification'
 import type { Role } from '~/shared/role'
+import { validatePassword } from '~/shared/utils/validation'
 
 export interface CreateUserInput {
   name: string
   email: string
-  username: string
   phone: string
   password: string
   tenantId: string
@@ -35,16 +35,28 @@ export class CreateUserUsecase implements CreateUserInterface {
   async execute(
     data: CreateUserInput
   ): Promise<NotificationData<CreateUserOutput>> {
-    const userExists = await this.user.findByUniqueProps({
-      email: data.email,
-      phone: data.phone,
-      username: data.username,
-    })
+    const userEmailExists = await this.user.findByEmail(data.email)
 
-    if (userExists)
+    if (userEmailExists)
       throw new NotificationError({
-        message: 'User already exists',
+        message: 'User email already exists',
         code: HttpCode.CONFLICT,
+      })
+
+    const userPhoneExists = await this.user.findByPhone(data.phone)
+
+    if (userPhoneExists)
+      throw new NotificationError({
+        message: 'User phone already exists',
+        code: HttpCode.CONFLICT,
+      })
+
+    const { error, message } = validatePassword(data.password)
+
+    if (error)
+      throw new NotificationError({
+        message,
+        code: HttpCode.FORBIDDEN,
       })
 
     const passwordHash = await this.crypto.hash(data.password)
@@ -56,7 +68,10 @@ export class CreateUserUsecase implements CreateUserInterface {
       password: passwordHash,
     })
 
-    await this.user.insert(user, { tenantId: data.tenantId, role: data.role })
+    await this.user.insert(user.value(), {
+      tenantId: data.tenantId,
+      role: data.role,
+    })
 
     return new NotificationData(
       { message: 'User created successfully', code: HttpCode.CREATED },

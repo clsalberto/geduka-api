@@ -36,13 +36,13 @@ export class CreateAddressUsecase implements CreateAddressInterface {
       district: data.district,
     })
 
-    if (!address) {
+    if (address === null) {
       address = Address.instance({ ...data, zip: Zip.create(data.zip) })
-      await this.address.insert(address)
+      await this.address.insert(address.value())
     }
 
     return new NotificationData(
-      { message: 'Get address successfully', code: HttpCode.OK },
+      { message: 'Endereço obtido com sucesso', code: HttpCode.OK },
       { address: address.formated() }
     )
   }

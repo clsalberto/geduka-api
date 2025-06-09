@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm'
 import { pgTable, primaryKey, uuid, varchar } from 'drizzle-orm/pg-core'
 
 import { tenants } from './tenants'
@@ -28,3 +29,14 @@ export const members = pgTable(
   },
   table => [primaryKey({ columns: [table.tenantId, table.userId] })]
 )
+
+export const membersRelations = relations(members, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [members.tenantId],
+    references: [tenants.id],
+  }),
+  user: one(users, {
+    fields: [members.userId],
+    references: [users.id],
+  }),
+}))

@@ -2,18 +2,19 @@ import type { Replace } from '~/domain/replace'
 
 import { Entity } from '../entity'
 import type { Email, Phone } from '../types'
-import type { Role } from '~/shared/role'
 
 export interface TenantMember {
   id: string
   name: string
-  role: Role
+  email: Email
+  phone: Phone
+  image?: string | null
 }
 
 export interface UserProps {
+  image?: string | null
   name: string
   email: Email
-  username: string
   phone: Phone
   password: string
   tenants?: TenantMember[]
@@ -48,19 +49,28 @@ export class User extends Entity<UserProps> {
   value(): UserEntity {
     return {
       id: this.id,
-      ...this.props,
+      name: this.props.name,
       email: this.props.email.value(),
       phone: this.props.phone.value(),
+      password: this.props.password,
+      image: this.props.image,
+      createdAt: this.props.createdAt,
+      activated: this.props.activated,
+      tenants: this.props.tenants,
     }
   }
 
   formated(): UserEntity {
     return {
       id: this.id,
-      ...this.props,
+      name: this.props.name,
       email: this.props.email.value(),
       phone: this.props.phone.formated(),
       password: '********',
+      image: this.props.image,
+      createdAt: this.props.createdAt,
+      activated: this.props.activated,
+      tenants: this.props.tenants,
     }
   }
 }

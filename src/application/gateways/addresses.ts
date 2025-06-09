@@ -1,4 +1,4 @@
-import type { Address } from '~/domain/entities'
+import type { Address, AddressEntity } from '~/domain/entities'
 
 export interface LocationProps {
   zip: string
@@ -10,5 +10,5 @@ export interface LocationProps {
 
 export interface AddressesGateway {
   findByLocationProps(location: LocationProps): Promise<Address | null>
-  insert(address: Address): Promise<void>
+  insert(address: AddressEntity): Promise<void>
 }

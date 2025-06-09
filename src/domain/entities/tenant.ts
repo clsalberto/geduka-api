@@ -6,15 +6,18 @@ import type { CNPJ, Email, Phone } from '../types'
 export interface UserMember {
   id: string
   name: string
+  email: Email
+  phone: Phone
+  image?: string | null
   role: Role
 }
 
 export interface TenantProps {
+  image?: string | null
   name: string
   email: Email
   phone: Phone
   taxId: CNPJ
-  domain: string
   users?: UserMember[]
   addressId: string
   createdAt: Date
@@ -46,20 +49,28 @@ export class Tenant extends Entity<TenantProps> {
   value(): TenantEntity {
     return {
       id: this.id,
-      ...this.props,
+      name: this.props.name,
       email: this.props.email.value(),
       phone: this.props.phone.value(),
       taxId: this.props.taxId.value(),
+      image: this.props.image,
+      addressId: this.props.addressId,
+      createdAt: this.props.createdAt,
+      users: this.props.users,
     }
   }
 
   formated(): TenantEntity {
     return {
       id: this.id,
-      ...this.props,
+      name: this.props.name,
       email: this.props.email.value(),
       phone: this.props.phone.formated(),
       taxId: this.props.taxId.formated(),
+      image: this.props.image,
+      addressId: this.props.addressId,
+      createdAt: this.props.createdAt,
+      users: this.props.users,
     }
   }
 }

@@ -19,7 +19,6 @@ export interface CreateTenantInput {
   email: string
   phone: string
   taxId: string
-  domain: string
   password: string
   address: CreateAddressInput
 }
@@ -40,18 +39,29 @@ export class CreateTenantUsecase implements CreateTenantInterface {
 
   async execute(
     data: CreateTenantInput,
-    db: unknown
+    db?: unknown
   ): Promise<NotificationData<CreateTenantOutput>> {
-    const tenantExists = await this.tenant.findByUniqueProps({
-      email: data.email,
-      phone: data.phone,
-      taxId: data.taxId,
-      domain: data.domain,
-    })
+    const tenantEmailExists = await this.tenant.findByEmail(data.email)
 
-    if (tenantExists)
+    if (tenantEmailExists)
       throw new NotificationError({
-        message: 'Tenant already exists',
+        message: 'Tenant email already exists',
+        code: HttpCode.CONFLICT,
+      })
+
+    const tenantPhoneExists = await this.tenant.findByPhone(data.phone)
+
+    if (tenantPhoneExists)
+      throw new NotificationError({
+        message: 'Tenant phone already exists',
+        code: HttpCode.CONFLICT,
+      })
+
+    const tenantTaxIdExists = await this.tenant.findByTaxId(data.taxId)
+
+    if (tenantTaxIdExists)
+      throw new NotificationError({
+        message: 'Tenant tax id already exists',
         code: HttpCode.CONFLICT,
       })
 
@@ -66,14 +76,14 @@ export class CreateTenantUsecase implements CreateTenantInterface {
       taxId: CNPJ.create(data.taxId),
       addressId: address.id,
     })
-    await this.tenant.insert(tenant)
+
+    await this.tenant.insert(tenant.value())
 
     const {
       data: { user },
     } = await this.user.execute(
       {
         ...data,
-        username: data.domain,
         tenantId: tenant.id,
         role: Role.TENANT,
       },
@@ -83,7 +93,10 @@ export class CreateTenantUsecase implements CreateTenantInterface {
     tenant.props.users?.push({
       id: user.id,
       name: user.name,
+      email: Email.create(user.email),
+      phone: Phone.create(user.phone),
       role: Role.TENANT,
+      image: user.image,
     })
 
     return new NotificationData(

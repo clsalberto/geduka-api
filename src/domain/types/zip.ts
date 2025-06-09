@@ -1,34 +1,9 @@
-import { z } from 'zod'
-
 import { HttpCode } from '~/shared/http'
 import { NotificationError } from '~/shared/notification'
-
-export const ZipSchema = z
-  .string()
-  .regex(/^\d{5}-\d{3}$|^\d{8}$/, {
-    message: 'CEP inválido: Formato esperado XXXXX-XXX ou XXXXXXXX',
-  })
-  .refine(
-    cep => {
-      // Remove caracteres não numéricos
-      const numeros = cep.replace(/\D/g, '')
-
-      // Verifica se tem 8 dígitos
-      if (numeros.length !== 8) return false
-
-      // Verifica se não são todos os dígitos iguais (ex: 00000-000)
-      if (/^(\d)\1+$/.test(numeros)) return false
-
-      return true
-    },
-    {
-      message:
-        'CEP inválido: Deve conter 8 dígitos e não pode ter todos os dígitos iguais',
-    }
-  )
+import { validateZip } from '~/shared/utils/validation'
 
 export class Zip {
-  private readonly zip: string
+  private zip: string
 
   private constructor(zip: string) {
     this.validate(zip)
@@ -36,14 +11,13 @@ export class Zip {
   }
 
   private validate(zip: string) {
-    const { error } = ZipSchema.safeParse(zip)
+    const { error, message } = validateZip(zip)
 
-    if (error) {
+    if (error)
       throw new NotificationError({
-        message: error.message,
+        message,
         code: HttpCode.FORBIDDEN,
       })
-    }
   }
 
   static create(zip: string) {

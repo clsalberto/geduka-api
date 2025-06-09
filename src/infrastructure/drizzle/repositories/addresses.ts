@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm'
 
-import { Address } from '~/domain/entities'
+import { Address, type AddressEntity } from '~/domain/entities'
 import { Zip } from '~/domain/types'
 
 import type {
@@ -34,7 +34,7 @@ export class AddressesRepository implements AddressesGateway {
           ),
         })
 
-    if (!data) return null
+    if (data === undefined) return null
 
     return Address.instance(
       {
@@ -45,11 +45,7 @@ export class AddressesRepository implements AddressesGateway {
     )
   }
 
-  async insert(address: Address): Promise<void> {
-    await this.ctx.insert(addresses).values({
-      ...address.props,
-      id: address.id,
-      zip: address.props.zip.value(),
-    })
+  async insert(address: AddressEntity): Promise<void> {
+    await this.ctx.insert(addresses).values({ ...address })
   }
 }

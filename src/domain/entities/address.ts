@@ -1,6 +1,6 @@
 import { Entity } from '~/domain/entity'
-import type { Zip } from '~/domain/types'
 import type { Replace } from '~/domain/replace'
+import type { Zip } from '~/domain/types'
 
 export interface AddressProps {
   zip: Zip
@@ -28,16 +28,26 @@ export class Address extends Entity<AddressProps> {
   value(): AddressEntity {
     return {
       id: this.id,
-      ...this.props,
       zip: this.props.zip.value(),
+      place: this.props.place,
+      number: this.props.number,
+      complement: this.props.complement,
+      district: this.props.district,
+      city: this.props.city,
+      state: this.props.state,
     }
   }
 
   formated(): AddressEntity {
     return {
       id: this.id,
-      ...this.props,
       zip: this.props.zip.formated(),
+      place: this.props.place,
+      number: this.props.number,
+      complement: this.props.complement,
+      district: this.props.district,
+      city: this.props.city,
+      state: this.props.state,
     }
   }
 }

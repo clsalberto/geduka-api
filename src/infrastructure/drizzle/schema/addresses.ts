@@ -5,8 +5,8 @@ export const addresses = pgTable('addresses', {
   zip: char('zip', { length: 8 }).notNull(),
   place: text('place').notNull(),
   number: varchar('number', { length: 8 }).notNull(),
-  complement: varchar('complement', { length: 60 }),
-  district: varchar('district', { length: 255 }).notNull(),
-  city: varchar('city', { length: 255 }).notNull(),
+  complement: varchar('complement', { length: 80 }),
+  district: varchar('district').notNull(),
+  city: varchar('city').notNull(),
   state: char('state', { length: 2 }).notNull(),
 })

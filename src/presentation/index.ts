@@ -1,16 +1,11 @@
 import { fastifyCors } from '@fastify/cors'
 import { fastify } from 'fastify'
 import pino from 'pino'
-import {
-  type ZodTypeProvider,
-  serializerCompiler,
-  validatorCompiler,
-} from 'fastify-type-provider-zod'
 
 import { env } from '~/infrastructure/env'
 
-import { routes as accounts } from './routes/accounts'
 import { errorHandler } from './handler'
+import { routes as accounts } from './routes/accounts'
 
 const loggerConfig = {
   redact: [
@@ -30,10 +25,7 @@ export const logger = pino(loggerConfig)
 export async function buildServer() {
   const app = fastify({
     logger: loggerConfig,
-  }).withTypeProvider<ZodTypeProvider>()
-
-  app.setValidatorCompiler(validatorCompiler)
-  app.setSerializerCompiler(serializerCompiler)
+  })
 
   app.register(fastifyCors, {
     origin: env.FRONTEND_URL,

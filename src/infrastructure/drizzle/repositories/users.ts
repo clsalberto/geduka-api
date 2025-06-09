@@ -1,44 +1,23 @@
-import { eq, or } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 
-import { User } from '~/domain/entities'
+import { User, type UserEntity } from '~/domain/entities'
 import { Email, Phone } from '~/domain/types'
 
-import type {
-  MemberProps,
-  UsersGateway,
-  UserUniqueProps,
-} from '~/application/gateways/users'
+import type { MemberProps, UsersGateway } from '~/application/gateways'
 
 import type { Transaction } from '~/infrastructure/drizzle/client'
 import { members } from '~/infrastructure/drizzle/schema/members'
 import { users } from '~/infrastructure/drizzle/schema/users'
 
 export class UsersRepository implements UsersGateway {
-  constructor(private readonly ctx: Transaction) { }
-
-  async findByUniqueProps(props: UserUniqueProps): Promise<User | null> {
-    const data = await this.ctx.query.users.findFirst({
-      where: or(eq(users.email, props.email), eq(users.phone, props.phone)),
-    })
-
-    if (!data) return null
-
-    return User.instance(
-      {
-        ...data,
-        email: Email.create(data.email),
-        phone: Phone.create(data.phone),
-      },
-      data.id
-    )
-  }
+  constructor(private readonly ctx: Transaction) {}
 
   async findByEmail(email: string): Promise<User | null> {
     const data = await this.ctx.query.users.findFirst({
       where: eq(users.email, email),
     })
 
-    if (!data) return null
+    if (data === undefined) return null
 
     return User.instance(
       {
@@ -55,7 +34,7 @@ export class UsersRepository implements UsersGateway {
       where: eq(users.phone, phone),
     })
 
-    if (!data) return null
+    if (data === undefined) return null
 
     return User.instance(
       {
@@ -67,16 +46,11 @@ export class UsersRepository implements UsersGateway {
     )
   }
 
-  async insert(user: User, member: MemberProps): Promise<void> {
+  async insert(user: UserEntity, member: MemberProps): Promise<void> {
     await this.ctx.transaction(async tx => {
       const [data] = await tx
         .insert(users)
-        .values({
-          ...user.props,
-          email: user.props.email.value(),
-          phone: user.props.phone.value(),
-          id: user.id,
-        })
+        .values({ ...user })
         .returning()
 
       await tx.insert(members).values({

@@ -1,37 +1,9 @@
-import { z } from 'zod'
-
 import { HttpCode } from '~/shared/http'
 import { NotificationError } from '~/shared/notification'
-
-export const PhoneSchema = z
-  .string()
-  .regex(/^(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/, {
-    message: 'Telefone inválido: Erro no formato',
-  })
-  .refine(
-    telefone => {
-      // Remove caracteres não numéricos
-      const numeros = telefone.replace(/\D/g, '')
-
-      // Verifica se tem entre 10 e 11 dígitos (com DDD)
-      if (numeros.length < 10 || numeros.length > 11) return false
-
-      // Se tiver 11 dígitos, o primeiro dígito após o DDD deve ser 9 (celular)
-      if (numeros.length === 11 && numeros.charAt(2) !== '9') return false
-
-      // Verifica DDD válido (entre 11 e 99)
-      const ddd = Number.parseInt(numeros.substring(0, 2))
-      if (ddd < 11 || ddd > 99) return false
-
-      return true
-    },
-    {
-      message: 'Telefone inválido: DDD inválido',
-    }
-  )
+import { validatePhone } from '~/shared/utils/validation'
 
 export class Phone {
-  private readonly phone: string
+  private phone: string
 
   private constructor(phone: string) {
     this.validate(phone)
@@ -39,14 +11,13 @@ export class Phone {
   }
 
   private validate(phone: string) {
-    const { error } = PhoneSchema.safeParse(phone)
+    const { error, message } = validatePhone(phone)
 
-    if (error) {
+    if (error)
       throw new NotificationError({
-        message: error.message,
+        message,
         code: HttpCode.FORBIDDEN,
       })
-    }
   }
 
   static create(phone: string) {
